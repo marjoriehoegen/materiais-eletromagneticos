@@ -16,16 +16,14 @@ L = 26.52e-3
 f = 60
 t_i = 0
 t_f = 3/f # 3 periodos
-n = 1001
 passo = 0.0001
+n = round((1/f)/passo)
 deltat = (t_f - t_i)/(n-1)
 
 t = np.linspace(t_i,t_f,n)
 
 # tensao
-def V(t):
-	return 311*np.sin(2*np.pi*f*t)
-V = V(t)
+V = 311*np.sin(2*np.pi*f*t)
 
 # corrente
 i = np.zeros([n])
@@ -37,23 +35,46 @@ for j in range(1,n):
 
 P = V * i
 
-# Potencia ativa
-Pat = 0
+# valor eficaz
 soma = 0
 
-#tc = round(t_f - (1/f))
+V_int = 0
+Vsq = V ** 2	
+for i in range(0,n-1):
+	soma = passo/2 * (Vsq[i] + Vsq[i+1])
+	V_int = V_int + soma
+Vef = math.sqrt(f * V_int)
+print("Vef: ", Vef)
 
-N = round((1/f)/passo)
+I_int = 0
+Isq = i ** 2	
+for j in range(0,n-1):
+	soma = passo/2 * (Isq[j] + Isq[j+1])
+	I_int = I_int + soma
+Ief = math.sqrt(f * I_int)
+print("Ief: ", Ief)
 
-for j in range(0,N):
+# último período
+nf = round(t_f/passo)
+ni = round((t_f - (1/f))/passo)
+print(nf)
+print(ni)
+
+# potência ativa
+Pat = 0
+soma = 0
+for j in range(ni,nf):
 	soma = passo/2 * (P[j] + P[j+1])
 	Pat = Pat + soma
 Pat = f * Pat
 
-print("Pat: ", Pat)
+print("Potência ativa: ", Pat)
 
-
-
+# potência aparente VefIef
+S = 0
+for j in range(ni,nf):
+	S = S + (V[j] * i[j])
+print("Potência aparente: ", S)
 
 # plots
 
