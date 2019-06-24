@@ -23,12 +23,12 @@ C = 120.6e-6
 f = 60
 
 t_i = 0
-t_f = 5/f # 5 periodos
+t_f = 8/f # 5 periodos
 
-deltat=0.0001;
-n = round((t_f - t_i)/deltat)
+deltat=0.00001;
+n = round((t_f)/deltat)
 
-t = np.linspace(t_i,t_f,n)
+t = np.linspace(t_i,t_f,(t_f-t_i)/deltat)
 
 V = 110*np.sin(2*np.pi*f*t)
 i = np.zeros([n])
@@ -41,10 +41,30 @@ for j in range(0,n-1):
 	i[j+1] = i[j] + di[j]*deltat
 	Vc[j+1]=Vc[j]+(i[j+1]*deltat)/C
 
-# último período
-nf = round(t_f/deltat)
-ni = round((t_f - (1/f))/deltat)
+# peúltimo período
+nf = round((t_f - (1/f))/deltat)
+ni = round((t_f - (2/f))/deltat)
 
+# corrente eficaz
+I_int = 0
+Isq = i ** 2
+soma = 0
+for j in range(ni,nf-1):
+	soma = deltat/2 * (Isq[j] + Isq[j+1])
+	I_int = I_int + soma
+Ief = math.sqrt(f * I_int)
+print("Ief: ", Ief)
+
+# potencia ativa
+P = V * i
+Pat = 0
+soma = 0
+for j in range(ni,nf):
+	soma = deltat/2 * (P[j] + P[j+1])
+	Pat = Pat + soma
+Pat = f * Pat
+
+print("Potência ativa: ", Pat)
 
 
 # plots
